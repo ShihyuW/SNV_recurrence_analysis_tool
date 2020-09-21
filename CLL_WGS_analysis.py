@@ -9,7 +9,7 @@ Created on Thu Jun 11 12:07:24 2020
 
 import pandas as pd
 
-CLL_WGS_list=["CLL001","CLL002","CLL003","CLL004","CLL005","CLL006","CLL007","CLL008","CLL009","CLL010","CLL011","CLL012","CLL013","CLL014","CLL015","CLL016","CLL017","CLL018","CLL019","CLL020"]
+Sample list = ["Test01", "Test02", "Test03"]
 
 # =============================================================================
 # #Generate info tags for N/T
