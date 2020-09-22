@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Get target file names and make name list
+#Get target file names and make name list(optional)
 cd /work2/u1067478/Test/
 ls -l /work2/u1067478/Test/Test*.txt|awk '{print $9}'>variants_files_list.txt
 
