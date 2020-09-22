@@ -1,5 +1,5 @@
 # SNV_recurrence_analysis_tool
- ###Environment: python 3.0+###
+### Environment: python 3.0+ with "openpyxl" module installed ###
 This is a recurrence analysis tool for SNP/Indel analysis.
 Due to the unique vcf formats among different platforms, this analysis is TOOL SPECIFIC.
 
