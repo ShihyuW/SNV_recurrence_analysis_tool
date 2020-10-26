@@ -11,7 +11,7 @@ awk -F "\t" 'BEGIN {OFS = "\t"} NR == 1 {next} {NF=80}1' ${variants_file}>>nofil
 done<variants_files_list.txt
 
 #Get header from one of the target file
-head -n 1 /work2/u1067478/Test/Test01.txt|awk -F "\t" 'BEGIN {OFS = "\t"} {NF=80}1' > nofilter_union_of_CLL_WES_variants.txt
+head -n 1 /work2/u1067478/Test/Test01.txt|awk -F "\t" 'BEGIN {OFS = "\t"} {NF=80}1' > union_of_test_variants.txt
 
 #Get the union of all variants with information
-sort nofilter_combine_variants_info.txt |uniq >> nofilter_union_of_CLL_WES_variants.txt
+sort nofilter_combine_variants_info.txt |uniq >> union_of_test_variants.txt
