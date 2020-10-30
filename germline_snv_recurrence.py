@@ -79,6 +79,6 @@ for i in Sample_list:
     ary=U.join(S["GT_N"]).rename(columns={'GT_N':f'{i}'})
     U=ary
 
-ary["Counts"]=ary.iloc[:,8:13].count(axis=1)
-#print(ary.iloc[1,8:13])
+ary["Counts"]=ary.iloc[:,8:10].count(axis=1)
+#print(ary.iloc[1,8:10])
 ary.to_excel("VaraintBasedArray.xlsx")
