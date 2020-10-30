@@ -9,7 +9,7 @@ Created on Thu Jun 11 12:07:24 2020
 
 import pandas as pd
 
-Sample_list = ["Test01", "Test02", "Test03"]
+Sample_list = ["somatic_test01", "somatic_test02", "somatic_test03"]
 
 #Generate info tags for N/T
 N_info_tags=['GT','SQ','AD','AF','F1R2','F2R1','DP','SB','MB','PS']
