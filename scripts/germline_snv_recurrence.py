@@ -12,16 +12,13 @@ import os as os
 input_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\inputs'
 output_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\outputs'
 
+# change the directory
 os.chdir('{}'.format(input_path))
 
 # family member ID from ANNOVAR file
 Sample_list = ["germline_test01","germline_test02"]
 union_file_name = 'germline_union_of_variants_test.txt'
-
-# Process union file
 union_file = pd.read_csv('{}'.format(union_file_name),sep="\t")
-
-#.to_excel("germline_union_of_variants_test.xlsx", index=False)
 
 # create index
 def create_idx(df):
@@ -37,7 +34,7 @@ def create_idx(df):
     finaldf=pd.concat([L,idx_df], axis=1)
     return finaldf
 
-# generate info tags for Otherinfo13
+# generate info tags for Otherinfo12
 # Otherinfo12 (there are three format...)
 # GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB:PS
 # GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB
@@ -58,15 +55,17 @@ for i in Sample_list:
          
     df1=pd.DataFrame(n_list, columns=N_info_tags)
     final_Annotation_file=pd.concat([file,df1],axis=1)
-        #final_Annotation_file.to_excel(f"{i}.xlsx", index=False)
+# create index on each annotation file
     create_idx(final_Annotation_file)
 
-# Process union file
+# create index on union file
+
 union_file = create_idx(union_file)
 
 # Generate PASSed and 3 filtered array by Idx
 U=pd.DataFrame(union_file)[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
 
+# Process union file
 for i in Sample_list:
     S=pd.DataFrame(final_Annotation_file)
     
@@ -81,10 +80,11 @@ for i in Sample_list:
 
 ary["Counts"]=ary.iloc[:,-3:-1].count(axis=1)
 ary = ary.fillna(".")
+
 # check the count column
 #print(ary.iloc[1,-3:-1])
 
-# export the result
+# export the result to output_path
 ary.to_excel('{}'.format(output_path) + "\VaraintBasedArray.xlsx")
 
 
