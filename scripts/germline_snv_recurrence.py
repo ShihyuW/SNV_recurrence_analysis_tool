@@ -56,19 +56,17 @@ for i in Sample_list:
     df1=pd.DataFrame(n_list, columns=N_info_tags)
     final_Annotation_file=pd.concat([file,df1],axis=1)
 # create index on each annotation file
-    create_idx(final_Annotation_file)
+    create_idx(final_Annotation_file).to_excel('{}'.format(output_path) + f"\\Indexed_{i}.xlsx", index=False)
 
 # create index on union file
-
-union_file = create_idx(union_file)
+create_idx(union_file).to_excel('{}'.format(output_path) + "\\Indexed_germline_union_of_variants_test.xlsx", index=False)
 
 # Generate PASSed and 3 filtered array by Idx
-U=pd.DataFrame(union_file)[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
+U=pd.read_excel('{}'.format(output_path) + "\\Indexed_germline_union_of_variants_test.xlsx", index_col="Idx")[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
 
 # Process union file
 for i in Sample_list:
-    S=pd.DataFrame(final_Annotation_file)
-    
+    S=pd.read_excel('{}'.format(output_path) + f"\\Indexed_{i}.xlsx", index_col="Idx")
     #Filters (Add if needed)
     #filter1=(S['Func.refGene'].isin(["exonic","splicing","exonic;splicing"]))&(S['ExonicFunc.refGene'] != "synonymous SNV")
     #filter2=(S['AF_eas.1'].isin(["0","."]))&(S['TaiwanBiobank-official_Illumina1000-AF'].isin(["0","."]))
@@ -85,6 +83,7 @@ ary = ary.fillna(".")
 #print(ary.iloc[1,-3:-1])
 
 # export the result to output_path
-ary.to_excel('{}'.format(output_path) + "\VaraintBasedArray.xlsx")
+ary.to_excel('{}'.format(output_path) + "\\germline_snv_VaraintBasedArray.xlsx", index=False)
+
 
 
