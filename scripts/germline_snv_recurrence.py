@@ -76,14 +76,14 @@ for i in Sample_list:
     ary=U.join(S["GT_N"]).rename(columns={'GT_N':f'{i}'})
     U=ary
 
-ary["Counts"]=ary.iloc[:,-3:-1].count(axis=1)
+ary["Counts"]=ary.iloc[:,9:11].count(axis=1)
 ary = ary.fillna(".")
 
 # check the count column
-#print(ary.iloc[1,-3:-1])
+#print(ary.iloc[1,9:11])
 
 # export the result to output_path
-ary.to_excel('{}'.format(output_path) + "\\germline_snv_VaraintBasedArray.xlsx", index=False)
+ary.to_excel('{}'.format(output_path) + "\\germline_snv_VaraintBasedArray.xlsx")
 
 
 
