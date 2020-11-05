@@ -8,16 +8,33 @@ Created on Wed Oct 28 16:03:13 2020
 import pandas as pd
 import os as os
 
-# import data
-#union_variant = pd.read_table("union_of_variants_test.txt")
+# set the input/output path 
+input_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\inputs'
+output_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\outputs'
 
-# select the column
-#union_variant = union_variant[["Chr", "Start", "End", "Func.refGene", "Gene.refGene", "AAChange.refGene" ,"AF_eas.2", "avsnp150"]]
+# change the directory
+os.chdir('{}'.format(input_path))
 
-# MDF016 & MDF048 family member ANNOVAR file
+# family member ID from ANNOVAR file
 Sample_list = ["germline_test01","germline_test02"]
+union_file_name = 'germline_union_of_variants_test.txt'
+union_file = pd.read_csv('{}'.format(union_file_name),sep="\t")
 
-# generate info tags for N/T
+# create index
+def create_idx(df):
+    idx_list=[]
+    L=df
+    L["Start"]=L["Start"].apply(str)
+    L["End"]=L["End"].apply(str)
+      
+    for i in range(len(L)):
+        idx=L.loc[i]["Chr"]+"/"+L.loc[i]["Start"]+"/"+L.loc[i]["End"]+"/"+L.loc[i]["Ref"]+"/"+L.loc[i]["Alt"]
+        idx_list.append(idx)
+    idx_df=pd.DataFrame(idx_list,columns=["Idx"])
+    finaldf=pd.concat([L,idx_df], axis=1)
+    return finaldf
+
+# generate info tags for Otherinfo12
 # Otherinfo12 (there are three format...)
 # GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB:PS
 # GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB
@@ -25,13 +42,11 @@ Sample_list = ["germline_test01","germline_test02"]
 N_info_tags=['GT','AD','AF','DP','F1R2','F2R1','GQ','PL','GP','PRI','SB','MB','PS']
 for i in range(13):
     N_info_tags[i]+="_N"
-    
-    
+        
 # processing columns
 for i in Sample_list:
     file=pd.read_csv(f"{i}.txt",sep="\t")
     normal_info=file["Otherinfo13"]
-
     
     n_list=[]
     for j in range(len(normal_info)):
@@ -40,35 +55,19 @@ for i in Sample_list:
          
     df1=pd.DataFrame(n_list, columns=N_info_tags)
     final_Annotation_file=pd.concat([file,df1],axis=1)
-    final_Annotation_file.to_excel(f"{i}.xlsx", index=False)
+# create index on each annotation file
+    create_idx(final_Annotation_file)
 
-# create index
-def create_idx(df):
-    idx_list=[]
-    L=df
-    L["Start"]=L["Start"].apply(str)
-    L["End"]=L["End"].apply(str)
-  
-    
-    for i in range(len(L)):
-        idx=L.loc[i]["Chr"]+"/"+L.loc[i]["Start"]+"/"+L.loc[i]["End"]+"/"+L.loc[i]["Ref"]+"/"+L.loc[i]["Alt"]
-        idx_list.append(idx)
-    idx_df=pd.DataFrame(idx_list,columns=["Idx"])
-    finaldf=pd.concat([L,idx_df], axis=1)
-    return finaldf
+# create index on union file
 
-for i in Sample_list:
-    create_idx(pd.read_excel(f"{i}.xlsx")).to_excel(f"Indexed_{i}.xlsx", index=False)
-
-# Process union file
-pd.read_csv("germline_union_of_variants.txt",sep="\t").to_excel("germline_union_of_variants.xlsx", index=False)
-create_idx(pd.read_excel("germline_union_of_variants.xlsx")).to_excel("Indexed_germline_union_of_variants.xlsx", index=False)
+union_file = create_idx(union_file)
 
 # Generate PASSed and 3 filtered array by Idx
-U=pd.read_excel("Indexed_germline_union_of_variants.xlsx", index_col="Idx")[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
+U=pd.DataFrame(union_file)[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
 
+# Process union file
 for i in Sample_list:
-    S=pd.read_excel(f"Indexed_{i}.xlsx",index_col="Idx")
+    S=pd.DataFrame(final_Annotation_file)
     
     #Filters (Add if needed)
     #filter1=(S['Func.refGene'].isin(["exonic","splicing","exonic;splicing"]))&(S['ExonicFunc.refGene'] != "synonymous SNV")
@@ -79,6 +78,13 @@ for i in Sample_list:
     ary=U.join(S["GT_N"]).rename(columns={'GT_N':f'{i}'})
     U=ary
 
-ary["Counts"]=ary.iloc[:,8:10].count(axis=1)
-#print(ary.iloc[1,8:10])
-ary.to_excel("VaraintBasedArray.xlsx")
+ary["Counts"]=ary.iloc[:,-3:-1].count(axis=1)
+ary = ary.fillna(".")
+
+# check the count column
+#print(ary.iloc[1,-3:-1])
+
+# export the result to output_path
+ary.to_excel('{}'.format(output_path) + "\VaraintBasedArray.xlsx")
+
+
