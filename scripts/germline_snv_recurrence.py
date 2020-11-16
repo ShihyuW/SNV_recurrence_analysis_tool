@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# coding=utf-8
+
 """
 Created on Wed Oct 28 16:03:13 2020
 
@@ -9,8 +11,8 @@ import pandas as pd
 import os as os
 
 # set the input/output path 
-input_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\inputs'
-output_path='D:\\Jacob-Lab\\github\\SNV_recurrence_analysis_tool\\outputs'
+input_path='/work2/lynn88065/script/github/SNV_recurrence_analysis_tool/inputs/'
+output_path='/work2/lynn88065/script/github/SNV_recurrence_analysis_tool/outputs/'
 
 # change the directory
 os.chdir('{}'.format(input_path))
@@ -63,7 +65,7 @@ for i in Sample_list:
 union_file = create_idx(union_file)
 
 # Generate PASSed and 3 filtered array by Idx
-U=pd.DataFrame(union_file)[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
+U=pd.DataFrame(union_file)[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "AF_popmax.1" , "avsnp150"]]
 
 # Process union file
 for i in Sample_list:
@@ -75,7 +77,7 @@ for i in Sample_list:
     #filter3=(S.AF_T >= 0.05)&(S.AF_T-S.AF_N >= 0.05)
     #GATK_filtered_S=S[(S.Otherinfo10 == "PASS")&(filter1&filter2&filter3)]
     
-    ary=U.join(S["GT_N"]).rename(columns={'GT_N':f'{i}'})
+    ary=U.join(S["GT_N"]).rename(columns={'GT_N':"{i}"})
     U=ary
 
 ary["Counts"]=ary.iloc[:,-3:-1].count(axis=1)
@@ -85,6 +87,6 @@ ary = ary.fillna(".")
 #print(ary.iloc[1,-3:-1])
 
 # export the result to output_path
-ary.to_excel('{}'.format(output_path) + "\VaraintBasedArray.xlsx")
+ary.to_excel('{}'.format(output_path) + "/germline_VaraintBasedArray.xlsx")
 
 
