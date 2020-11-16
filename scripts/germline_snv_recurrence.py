@@ -77,14 +77,14 @@ for i in Sample_list:
     #filter3=(S.AF_T >= 0.05)&(S.AF_T-S.AF_N >= 0.05)
     #GATK_filtered_S=S[(S.Otherinfo10 == "PASS")&(filter1&filter2&filter3)]
     
-    ary=U.join(S["GT_N"]).rename(columns={'GT_N':"{i}"})
+    ary=U.join(S["GT_N"]).rename(columns={'GT_N':f"{i}"})
     U=ary
 
-ary["Counts"]=ary.iloc[:,-3:-1].count(axis=1)
+ary["Counts"]=ary.iloc[:,11:13].count(axis=1)
 ary = ary.fillna(".")
 
 # check the count column
-#print(ary.iloc[1,-3:-1])
+print(ary.iloc[1,10:12])
 
 # export the result to output_path
 ary.to_excel('{}'.format(output_path) + "/germline_VaraintBasedArray.xlsx")
