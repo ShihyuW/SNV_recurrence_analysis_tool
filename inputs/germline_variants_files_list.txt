@@ -1,0 +1,2 @@
+/work2/lynn88065/script/github/SNV_recurrence_analysis_tool/inputs/germline_test01.txt
+/work2/lynn88065/script/github/SNV_recurrence_analysis_tool/inputs/germline_test02.txt
