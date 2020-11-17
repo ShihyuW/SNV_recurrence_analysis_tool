@@ -62,7 +62,7 @@ for i in Sample_list:
 create_idx(union_file).to_excel('{}'.format(output_path) + "\\Indexed_germline_union_of_variants_test.xlsx", index=False)
 
 # Generate PASSed and 3 filtered array by Idx
-U=pd.read_excel('{}'.format(output_path) + "\\Indexed_germline_union_of_variants_test.xlsx", index_col="Idx")[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "avsnp150"]]
+U=pd.read_excel('{}'.format(output_path) + "\\Indexed_germline_union_of_variants_test.xlsx", index_col="Idx")[["Chr","Start","End","Func.refGene", "ExonicFunc.refGene" ,"Gene.refGene", "AAChange.refGene" ,"AF_eas.1", "AF_popmax.1", "avsnp150"]]
 
 # Process union file
 for i in Sample_list:
@@ -76,11 +76,12 @@ for i in Sample_list:
     ary=U.join(S["GT_N"]).rename(columns={'GT_N':f'{i}'})
     U=ary
 
-ary["Counts"]=ary.iloc[:,9:11].count(axis=1)
+# get the total counts from member cloumn
+ary["Counts"]=ary.iloc[:,10:12].count(axis=1)
 ary = ary.fillna(".")
 
 # check the count column
-#print(ary.iloc[1,9:11])
+#print(ary.iloc[1,10:12])
 
 # export the result to output_path
 ary.to_excel('{}'.format(output_path) + "\\germline_snv_VaraintBasedArray.xlsx")
