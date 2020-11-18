@@ -8,6 +8,14 @@ Created on Thu Jun 11 12:07:24 2020
 
 
 import pandas as pd
+import os 
+
+#Set path
+Input_path="/Users/shihyu/SNV_recurrence_analysis_tool/inputs"
+Output_path="/Users/shihyu/SNV_recurrence_analysis_tool/outputs"
+
+#Change directory
+os.chdir(Input_path)
 
 Sample_list = ["somatic_test01", "somatic_test02", "somatic_test03"]
 
@@ -20,7 +28,7 @@ for i in range(10):
 
 #processing columns
 for i in Sample_list:
-    file=pd.read_csv(f"{i}.txt",sep="\t")
+    file=pd.read_csv(rf'{Input_path}/{i}.txt',sep="\t")
     normal_info=file["Otherinfo13"]
     tumor_info=file["Otherinfo14"]
     
@@ -37,14 +45,14 @@ for i in Sample_list:
     df1=pd.DataFrame(n_list, columns=N_info_tags)
     df2=pd.DataFrame(t_list, columns=T_info_tags)
     final_Annotation_file=pd.concat([file,df1,df2],axis=1)
-    final_Annotation_file.to_excel(f"{i}.xlsx", index=False)
+    final_Annotation_file.to_excel(f"{Output_path}/{i}.xlsx", index=False)
 
 
 
 #Calculate VAF
 def calculate_AF_T_N(excel_file):
     val_list=[]
-    df=pd.read_excel(excel_file)
+    df=pd.read_excel(r'excel_file')
     for i in range(len(df)):
         val=df.loc[i]["AF_T"]-df.loc[i]["AF_N"]
         val_list.append(val)
@@ -59,8 +67,7 @@ def create_idx(df):
     L=df
     L["Start"]=L["Start"].apply(str)
     L["End"]=L["End"].apply(str)
-  
-    
+      
     for i in range(len(L)):
         idx=L.loc[i]["Chr"]+"/"+L.loc[i]["Start"]+"/"+L.loc[i]["End"]+"/"+L.loc[i]["Ref"]+"/"+L.loc[i]["Alt"]
         idx_list.append(idx)
@@ -70,21 +77,21 @@ def create_idx(df):
 
 
 for i in Sample_list:
-    create_idx(calculate_AF_T_N(f"{i}.xlsx")).to_excel(f"Indexed_{i}.xlsx", index=False)
+    create_idx(calculate_AF_T_N(f"{Output_path}/{i}.xlsx")).to_excel(f'{Output_path}/Indexed_{i}.xlsx', index=False)
 
 
 
 
 #Process union file
-pd.read_csv("union_of_test_variants.txt",sep="\t").to_excel("union_of_test_variants.xlsx", index=False)
-create_idx(pd.read_excel("union_of_test_variants.xlsx")).to_excel("Indexed_union_of_test_variants.xlsx", index=False)
+pd.read_csv(rf'{Input_path}/somatic_union_of_test_variants.txt',sep="\t").to_excel(f'{Output_path}/somatic_union_of_test_variants.xlsx', index=False)
+create_idx(pd.read_excel(r'Output_path+"union_of_test_variants.xlsx"')).to_excel(f'{Output_path}/Indexed_union_of_test_variants.xlsx', index=False)
 
 
 #Generate PASSed and 3 filtered array by Idx
-U=pd.read_excel("Indexed_union_of_test_variants.xlsx", index_col="Idx")[["Func.refGene","Gene.refGene","ExonicFunc.refGene","AAChange.refGene","avsnp150","cosmic_coding_GRCh37_v91","cosmic_noncoding_GRCh37_v91","AF_eas.1","TaiwanBiobank-official_Illumina1000-AF", "TaiwanBiobank993WGS_AF"]]
+U=pd.read_excel(rf'{Output_path}/Indexed_union_of_test_variants.xlsx', index_col="Idx")[["Func.refGene","Gene.refGene","ExonicFunc.refGene","AAChange.refGene","avsnp150","cosmic_coding_GRCh37_v91","cosmic_noncoding_GRCh37_v91","AF_eas.1","TaiwanBiobank-official_Illumina1000-AF", "TaiwanBiobank993WGS_AF"]]
 
 for i in Sample_list:
-    S=pd.read_excel(f"Indexed_{i}.xlsx",index_col="Idx")
+    S=pd.read_excel(rf'{Output_path}/Indexed_{i}.xlsx',index_col="Idx")
     
     #Filters (Add if needed)
     #filter1=(S['Func.refGene'].isin(["exonic","splicing","exonic;splicing"]))&(S['ExonicFunc.refGene'] != "synonymous SNV")
@@ -97,14 +104,14 @@ for i in Sample_list:
     
     
 ary["Counts"]=ary.iloc[:,11:50:2].count(axis=1)
-ary[(ary.Counts>0)].to_excel("VaraintBasedArray.xlsx")
+ary[(ary.Counts>0)].to_excel(f'{Output_path}/VaraintBasedArray.xlsx')
 
 
 
 
 
 #Make list of unique Genes
-ary=pd.read_excel("VaraintBasedArray.xlsx").set_index("Gene.refGene")
+ary=pd.read_excel(rf'{Output_path}/VaraintBasedArray.xlsx').set_index("Gene.refGene")
 idx_list=ary.index.unique().to_list()
 
 #Make Gene-based recurrence array
@@ -130,7 +137,4 @@ for i in idx_list:
 #calculate the sum of occurrence among samples for each gene
 df["Occurrence(variants)"]=df.loc[:,Sample_list].sum(axis=1)
 df["Counts"]=(df.loc[:,Sample_list] != 0).astype(int).sum(axis=1)
-df.to_excel("GeneBasedArray.xlsx")
-
-
-    
+df.to_excel(f'{Output_path}/GeneBasedArray.xlsx')    
